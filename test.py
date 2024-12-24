@@ -81,6 +81,8 @@ finally:
         "round": [],
         "total_raised": [],
         "pre_valuation": [],
+        "investors": [],
+        "ecosystem": [],
         "categories": [],
         "roi": [],
         "date": [],
@@ -144,6 +146,24 @@ finally:
             pre_valuation = None
         ico_data["pre_valuation"].append(pre_valuation)
 
+        """
+        try:
+            investors = driver.find_element(
+                "xpath", f'//*[@id="table-list"]/li[{index}]/div[8]/p'
+            ).text
+        except NoSuchElementException:
+            investors = None
+            ico_data["investors"].append(investors)
+        """
+
+        try:
+            ecosystem = driver.find_element(
+                "xpath", f'//*[@id="table-list"]/li[{index}]/div[7]/ul/li/img'
+            ).get_attribute("alt")
+        except NoSuchElementException:
+            ecosystem = None
+            ico_data["ecosystem"].append(ecosystem)
+
         try:
             categories = driver.find_element(
                 "xpath", f'//*[@id="table-list"]/li[{index}]/div[8]/p'
@@ -169,7 +189,7 @@ finally:
         ico_data["date"].append(date)
 
         print(
-            f"Added data for project: #{index} {project_name, project_ticker, project_link, round, total_raised, pre_valuation, categories, roi, date}"
+            f"Added data for project: #{index} {project_name, project_ticker, project_link, round, total_raised, pre_valuation, ecosystem, categories, roi, date}"
         )
 
     driver.quit()

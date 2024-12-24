@@ -3,9 +3,20 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.common.exceptions import (
+    TimeoutException,
+    NoSuchElementException,
+    ElementNotInteractableException,
+)
+from selenium.webdriver.chrome.options import Options
+
 import time
 
+# Setup Chrome options
+chrome_options = Options()
+
+# Headless chrome for less overhead and faster
+chrome_options.add_argument("--headless")
 
 # Path to chromedriver
 chromedriver_path = "/usr/local/bin/chromedriver"
@@ -14,7 +25,7 @@ chromedriver_path = "/usr/local/bin/chromedriver"
 service = Service(executable_path=chromedriver_path)
 
 # Initialize the WebDriver with Service and Chrome options
-driver = webdriver.Chrome(service=service)
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # Set window size
 driver.set_window_size(1920, 1080)
@@ -40,7 +51,6 @@ try:
 
     time.sleep(5)
 
-    """
     # Repeatedly click 'Show more' button
     while True:
         try:
@@ -57,16 +67,13 @@ try:
                 time.sleep(5)
             except ElementNotInteractableException:
                 # If the button is found but not clickable, break the loop
-                print(
-                    "Finished loading content."
-                )
+                print("Finished loading content.")
                 break
 
         except TimeoutException:
             # If the button is not found within 30 seconds, assume content is fully loaded
             print("No more 'Show more' button found.")
             break
-    """
 
 except Exception as e:
     print(f"An unexpected error occurred: {e}")
@@ -81,6 +88,8 @@ finally:
         "round": [],
         "total_raised": [],
         "pre_valuation": [],
+        "investors": [],
+        "ecosystem": [],
         "categories": [],
         "roi": [],
         "date": [],
@@ -143,6 +152,24 @@ finally:
         except NoSuchElementException:
             pre_valuation = None
         ico_data["pre_valuation"].append(pre_valuation)
+
+        """
+        try:
+            investors = driver.find_element(
+                "xpath", f'//*[@id="table-list"]/li[{index}]/div[8]/p'
+            ).text
+        except NoSuchElementException:
+            investors = None
+            ico_data["investors"].append(investors)
+        """
+
+        try:
+            ecosystem = driver.find_element(
+                "xpath", f'//*[@id="table-list"]/li[{index}]/div[7]/ul/li/img'
+            ).get_attribute("alt")
+        except NoSuchElementException:
+            ecosystem = None
+            ico_data["ecosystem"].append(ecosystem)
 
         try:
             categories = driver.find_element(
